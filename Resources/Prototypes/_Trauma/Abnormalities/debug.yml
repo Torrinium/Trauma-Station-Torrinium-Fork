@@ -2,7 +2,7 @@
 - type: entity
   parent: [ BaseAbnormality, BaseAbnormalityAI, SimpleMobBase ]
   id: MobAbnormalityDebug
-  name: debug abnormality
+  name: debug abnormality teth
   description: A placeholder abnormality. You probably shouldn't be seeing this!
   components:
   - type: Sprite
@@ -10,3 +10,40 @@
     state: mouse-0
   - type: Abnormality
     risk: Teth
+
+- type: entity
+  parent: MobAbnormalityDebug
+  id: MobAbnormalityDebugTwo
+  name: debug abnormality he
+  description: A second placeholder abnormality, used to test the random pool.
+  components:
+  - type: Abnormality
+    risk: He
+
+- type: entity
+  parent: MobAbnormalityDebug
+  id: MobAbnormalityDebugThree
+  name: debug abnormality waw
+  description: A third debug abnormality for the testing pool.
+  components:
+  - type: Abnormality
+    risk: Waw
+
+
+- type: entity
+  parent: MobAbnormalityDebug
+  id: MobAbnormalityDebugFour
+  name: debug abnormality aleph
+  description: A fourth placeholder abnormality, used to test the random pool.
+  components:
+  - type: Abnormality
+    risk: Aleph
+
+- type: entity
+  parent: MobAbnormalityDebug
+  id: MobAbnormalityDebugFive
+  name: debug abnormality zayin
+  description: A fifth placeholder abnormality, used to test the random pool.
+  components:
+  - type: Abnormality
+    risk: Zayin

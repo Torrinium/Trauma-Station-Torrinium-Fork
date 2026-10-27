@@ -15,3 +15,19 @@ cogito-prompt-text = This doesn't have to be the end; you could still be you, un
 cogito-prompt-accept = Take Control
 
 cogito-prompt-deny = Refuse
+
+cogito-ghost-role-name = Abnormality: { $name }
+
+cogito-ghost-role-description = Something born of the Cogito, strange and indescribable.
+
+abnormality-linker-scanned = The linker hums, attuning itself to the creature.
+
+abnormality-linker-not-alive = There is nothing living here to attune to.
+
+abnormality-extractor-linked = The extractor shudders and locks onto its source.
+
+abnormality-extractor-unlinked = The extractor goes quiet as the link is severed.
+
+abnormality-extractor-busy = The extractor is already bound to something.
+
+abnormality-extractor-invalid = The attunement has faded, or its source is already bound elsewhere.

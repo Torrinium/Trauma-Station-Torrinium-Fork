@@ -1,6 +1,7 @@
 ﻿// SPDX-License-Identifier: AGPL-3.0-or-later
 
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
+using Robust.Shared.Prototypes;
 
 namespace Content.Trauma.Shared.Abnormalities;
 
@@ -21,4 +22,10 @@ public sealed partial class CogitoTransformingComponent : Component
     /// </summary>
     [DataField(customTypeSerializer: typeof(TimeOffsetSerializer)), AutoPausedField]
     public TimeSpan EndTime;
+
+    /// <summary>
+    /// The abnormality this person will become. Picked when the injection happens.
+    /// </summary>
+    [DataField]
+    public EntProtoId? Abnormality;
 }

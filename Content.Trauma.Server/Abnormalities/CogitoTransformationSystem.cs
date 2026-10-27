@@ -15,6 +15,8 @@ using Content.Shared.Speech.EntitySystems;
 using Content.Trauma.Shared.Abnormalities;
 using Robust.Shared.Player;
 using Robust.Shared.Timing;
+using Content.Server.Ghost.Roles.Components;
+using Content.Shared.EntityTable;
 
 namespace Content.Trauma.Server.Abnormalities;
 
@@ -32,6 +34,7 @@ public sealed partial class CogitoTransformationSystem : EntitySystem
     [Dependency] private EuiManager _eui = default!;
     [Dependency] private ISharedPlayerManager _player = default!;
     [Dependency] private NPCSystem _npc = default!;
+    [Dependency] private EntityTableSystem _entityTable = default!;
 
     private static readonly EntProtoId DebugAbnormality = "MobAbnormalityDebug";
     private static readonly TimeSpan PromptTime = TimeSpan.FromSeconds(30);
@@ -52,6 +55,9 @@ public sealed partial class CogitoTransformationSystem : EntitySystem
         var transforming = EnsureComp<CogitoTransformingComponent>(target);
         transforming.EndTime = _timing.CurTime + transforming.Delay;
 
+        var table = ProtoMan.Index(ent.Comp.AbnormalityTable);
+        transforming.Abnormality = _entityTable.GetFirstOrNull(table);
+
         _jitter.DoJitter(target, transforming.Delay, true, 10f, 10f, true);
         _stutter.DoStutter(target, transforming.Delay, refresh: true);
 
@@ -59,7 +65,7 @@ public sealed partial class CogitoTransformationSystem : EntitySystem
             _chat.TryEmoteWithChat(target, vocal.ScreamId, forceEmote: true);
     }
 
-    private void FinishTransformation(EntityUid uid)
+    private void FinishTransformation(EntityUid uid, CogitoTransformingComponent comp)
     {
         // Remember where they're standing before anything happens to the body.
         var coordinates = Transform(uid).Coordinates;
@@ -81,7 +87,7 @@ public sealed partial class CogitoTransformationSystem : EntitySystem
             Log.Info($"Cogito: mind {ToPrettyString(mindId)} is now in {ToPrettyString(mind.OwnedEntity)}");
 
         // 4. The abnormality arrives.
-        var abnormality = Spawn(DebugAbnormality, coordinates);
+        var abnormality = Spawn(comp.Abnormality ?? DebugAbnormality, coordinates);
 
         // 5. Ask the player whether they want to take control.
         if (mind != null && _player.TryGetSessionById(mind.UserId, out var session))
@@ -92,6 +98,11 @@ public sealed partial class CogitoTransformationSystem : EntitySystem
             var prompt = new CogitoPromptEui(this, mindId, abnormality, _timing.CurTime + PromptTime);
             _prompts.Add(prompt);
             _eui.OpenEui(prompt, session);
+        }
+        else
+        {
+            // No player to ask, so offer it to ghosts straight away.
+            OfferToGhosts(abnormality);
         }
     }
 
@@ -114,8 +125,11 @@ public sealed partial class CogitoTransformationSystem : EntitySystem
         if (TerminatingOrDeleted(abnormality))
             return;
 
-        // Nobody is driving it, so it goes back to its own AI.
+        // Nobody is driving it, so it goes back to its own AI...
         _npc.WakeNPC(abnormality);
+
+        // ...and any ghost can take it over.
+        OfferToGhosts(abnormality);
     }
 
     public void AcceptPossession(EntityUid mindId, EntityUid abnormality)
@@ -126,6 +140,18 @@ public sealed partial class CogitoTransformationSystem : EntitySystem
 
         _mind.MakeSentient(abnormality);
         _mind.TransferTo(mindId, abnormality);
+    }
+    private void OfferToGhosts(EntityUid abnormality)
+    {
+        if (TerminatingOrDeleted(abnormality))
+            return;
+
+        var role = EnsureComp<GhostRoleComponent>(abnormality);
+        EnsureComp<GhostTakeoverAvailableComponent>(abnormality);
+
+        role.RoleName = Loc.GetString("cogito-ghost-role-name", ("name", Name(abnormality)));
+        role.RoleDescription = Loc.GetString("cogito-ghost-role-description");
+        role.AllowMovement = true;
     }
 
     public override void Update(float frameTime)
@@ -140,7 +166,7 @@ public sealed partial class CogitoTransformationSystem : EntitySystem
             if (comp.EndTime > now)
                 continue;
 
-            FinishTransformation(uid);
+            FinishTransformation(uid, comp);
             RemCompDeferred(uid, comp);
         }
 

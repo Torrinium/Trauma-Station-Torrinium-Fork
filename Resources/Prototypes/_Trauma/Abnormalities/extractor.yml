@@ -1,0 +1,24 @@
+﻿- type: entity
+  parent: BaseGenerator
+  id: EnkaphalinExtractor
+  name: enkaphalin extractor
+  description: Draws power from a linked abnormality for as long as it lives.
+  components:
+  - type: PowerSupplier
+    supplyRate: 0
+  - type: EnkaphalinExtractor
+    powerOutput: 3000
+
+- type: entity
+  parent: BaseItem
+  id: AbnormalityLinker
+  name: abnormality linker
+  description: Attunes to an abnormality. Use it on one, then on an extractor to bind them.
+  components:
+  - type: Item
+    size: Small
+  - type: Sprite
+    sprite: Objects/Specific/Research/anomalyscanner.rsi
+    layers:
+    - state: icon
+  - type: AbnormalityLinker

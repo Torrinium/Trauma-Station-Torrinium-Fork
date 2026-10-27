@@ -1,6 +1,8 @@
 ﻿// SPDX-License-Identifier: AGPL-3.0-or-later
 
 using Robust.Shared.Audio;
+using Content.Shared.EntityTable;
+using Robust.Shared.Prototypes;
 
 namespace Content.Trauma.Shared.Abnormalities;
 
@@ -21,5 +23,11 @@ public sealed partial class CogitoInjectorComponent : Component
     // Whether the injector has been used up.
     [DataField, AutoNetworkedField]
     public bool UsedUp;
+
+    /// <summary>
+    /// The pool a random abnormality is picked from when this injector is used.
+    /// </summary>
+    [DataField]
+    public ProtoId<EntityTablePrototype> AbnormalityTable = "CogitoAbnormalities";
 
 }

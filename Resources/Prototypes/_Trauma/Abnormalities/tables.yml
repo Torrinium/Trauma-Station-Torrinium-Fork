@@ -1,0 +1,19 @@
+﻿# Threat-based pool for Cogito. Each tier's weight is how likely that tier is to be
+# chosen; inside a tier every abnormality is equally likely.
+# Only list tiers that have at least one abnormality (see the note below).
+- type: entityTable
+  id: CogitoAbnormalities
+  table: !type:GroupSelector
+    children:
+    # ZAYIN (weight 10): add one here when you have it.
+    - !type:GroupSelector # TETH
+      weight: 6
+      children:
+      - id: MobAbnormalityDebug
+    - !type:GroupSelector # HE
+      weight: 3
+      children:
+      - id: MobAbnormalityDebugTwo
+    # WAW (weight 1) and ALEPH (weight 0.25) go here when you have them.
+
+# todo: Add Zayin, Waw, and Aleph
